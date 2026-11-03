@@ -1,0 +1,28 @@
+# MATLAB generated files
+*.asv
+*.m~
+*.mex*
+*.fig
+*.mat
+
+# Large workspace files
+matlab_workspace.mat
+
+# Generated figures and outputs
+*.png
+*.jpg
+*.jpeg
+*.pdf
+*.eps
+*.svg
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Archive folder (tracked separately)
+# archive/
+
+# Data files (tracked via DVC or manually)
+# data/*.xlsx
