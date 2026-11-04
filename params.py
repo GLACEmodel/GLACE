@@ -28,7 +28,7 @@ TAC     = 0.091e-3    # total air content (Sailer et al.)   [m³_STP kg⁻¹ ice
 
 # ── Transport ─────────────────────────────────────────────────────────────────
 D_m2s       = 1e-11   # gas diffusivity in ice lattice      [m² s⁻¹]
-flux_bottom = 1.8e-9  # basal gas flux from bedrock         [mol m⁻² s⁻¹]
+flux_bottom = 1.8e-9  # basal gas flux from bedrock         [mol m⁻² yr⁻¹]
 
 # ── Velocity — Lliboutry (1979), frozen bed ───────────────────────────────────
 # Eulerian frame fixed to bed; z positive upward.
@@ -59,6 +59,6 @@ nz = 101              # number of vertical nodes
 Z  = 30.0             # domain height above bed             [m]
 
 # ── Time ──────────────────────────────────────────────────────────────────────
-T  = 1.25e5           # total simulation time               [yr]
+T  = 8e5              # total simulation time               [yr]
 dt = 3.0              # timestep                            [yr]
 # CFL check is performed in build_params(); target CFL < 1 for upwind stability.

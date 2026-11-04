@@ -84,7 +84,7 @@ def build_params(p=P):
         'type' : 'flux',
         'C'    : 0.0,
         'C_ice': 0.0,
-        'F'    : p.flux_bottom * 3.1536e7,    # convert s⁻¹ → yr⁻¹
+        'F'    : p.flux_bottom,                # [mol m⁻² yr⁻¹] — already in yr units
     }
 
     # Initial condition — uniform field at atmospheric ratio
