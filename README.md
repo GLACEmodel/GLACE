@@ -84,7 +84,7 @@ The rate profile:
 λ(z) = 0                            for z ≥ z_gl_limit
 ```
 
-**TODO: document the calibration source for λ_max, z_char, z_gl_limit.**
+**Calibration source:** `data/Table_S1_122025_for manuscript.xlsx`, feuille CampCentury, colonne D (Gas Content [mL/kg]). Le contenu total en gaz chute brutalement dans les 2 premiers mètres au-dessus du bed (de ~91 mL/kg en profondeur à 10–25 mL/kg près du bed). Le profil exponentiel est ajusté à ce gradient observé. Voir `glace/data.py::load_campcentury()` pour recharger les observations.
 
 ---
 
@@ -154,7 +154,7 @@ w(ζ) = −b_acc · [(p+2)ζ − (p+2)ζ^(p+1) + ζ^(p+2)],   ζ = z / H_ice
 
 - Lliboutry, L. (1979). Local friction laws for glaciers: a critical review and new openings. *Journal of Glaciology*, 23(89), 67–95.
 - Dansgaard, W., & Johnsen, S. J. (1969). A flow model and a time scale for the ice core from Camp Century, Greenland. *Journal of Glaciology*, 8(53), 215–223.
-- TODO: add gas-loss calibration reference.
+- Données de calibration de la perte de gaz : Table_S1_122025_for manuscript.xlsx (données de laboratoire ULB Sandra).
 
 ---
 

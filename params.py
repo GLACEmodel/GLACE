@@ -43,7 +43,13 @@ p_llib = 3            # Lliboutry shape parameter           [-]
 # ── Gas loss ──────────────────────────────────────────────────────────────────
 # λ(z) = gas_loss · exp(−z / z_char)  for z < z_gl_limit, else 0
 # Only the clathrate phase is affected (C_ice unchanged by gas loss).
-# TODO: document the calibration source for these values.
+#
+# Calibration source : data/Table_S1_122025_for manuscript.xlsx
+#   Sheet CampCentury, col D = Gas Content [mL_STP / kg_ice].
+#   The total gas content drops sharply in the bottom ~2 m (from ~91 mL/kg
+#   at depth to 10–25 mL/kg near the bed), indicating gas loss dominated by
+#   clathrate dissociation. The exponential profile is fitted to this gradient.
+#   See glace/data.py :: load_campcentury() to reload the observations.
 gas_loss   = 1.8e-6   # maximum gas-loss rate               [yr⁻¹]
 z_char     = 8.0      # e-folding height above bed          [m]
 z_gl_limit = 20.0     # upper limit of gas-loss zone        [m]
