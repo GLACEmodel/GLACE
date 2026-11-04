@@ -70,25 +70,25 @@ def build_params(p=P):
     # Gas-loss profile
     lambda_z = gas_loss_profile(z, p.gas_loss, p.z_char, p.z_gl_limit)
 
-    # Atmospheric Ar mixing ratio (initial & surface BC)
-    X_surf = 0.934e-2    # [mol/mol]
+    # Atmospheric mixing ratio — read from params (gas-specific, e.g. 0.934e-2 for Ar)
+    X_atm = p.X_atm   # [mol/mol]
 
     # Boundary conditions
     bc_surf = {
         'type' : 'dirichlet',
-        'C'    : X_surf * (pS[-1] + n_air),
-        'C_ice': X_surf * pS[-1],
+        'C'    : X_atm * (pS[-1] + n_air),   # total gas at atmospheric ratio
+        'C_ice': X_atm * pS[-1],              # lattice gas via Henry's law
         'F'    : 0.0,
     }
     bc_bed = {
         'type' : 'flux',
         'C'    : 0.0,
         'C_ice': 0.0,
-        'F'    : p.flux_bottom * 3.1536e7,     # convert to mol m⁻² yr⁻¹
+        'F'    : p.flux_bottom * 3.1536e7,    # convert s⁻¹ → yr⁻¹
     }
 
-    # Initial condition — uniform, atmospheric
-    Cbulk0 = X_surf * (pS + n_air)
+    # Initial condition — uniform field at atmospheric ratio
+    Cbulk0 = X_atm * (pS + n_air)
 
     return dict(
         z=z, dz=dz, dt=p.dt, nt=nt,

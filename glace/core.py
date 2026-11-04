@@ -217,25 +217,48 @@ def run_simulation(params, advect_fn=None, return_full=False):
         C_ice_all[:, 0]  = C_ice
         X_all[:, 0]      = x0
 
-    # ── Time loop ────────────────────────────────────────────────────────────
+    # ── Time loop — operator splitting A → F ─────────────────────────────────
+    #
+    #  Each timestep decomposes the full PDE into sequential sub-steps.
+    #  The state variable transported is C_bulk; C_ice is diagnosed at each
+    #  step via the Henry's-law equilibrium (partition).
+    #
+    #  A  Advect C_bulk          (transport.py: upwind or TVD)
+    #  B  Partition C_bulk       → x, C_ice via Henry's law
+    #  C  Diffuse C_ice          (implicit Euler, Fick's law)
+    #  D  Rebuild C_bulk         C_bulk += ΔC_ice from diffusion
+    #  E  Re-equilibrate         re-partition after diffusion step
+    #  F  Gas loss               clathrate phase decays: C_clath × exp(−λ·dt)
+    #
     for k in range(nt):
 
-        # A — Advect C_bulk
+        # ── A — Advection (upwind) ───────────────────────────────────────────
+        # Ice moves downward (u < 0); C_bulk is carried with the ice.
+        # Stability: CFL = |u_max| · dt / dz < 1 (checked in build_params).
         C_bulk_adv = advect_fn(C_bulk, u, dz, dt, bc_surf, bc_bed)
 
-        # B — Partition
+        # ── B — Partition (Henry's law) ──────────────────────────────────────
+        # Instantaneous equilibrium: x = C_bulk/(pS+n_air), C_ice = x·pS
         x_adv, Cice_adv = partition(C_bulk_adv, pS, n_air)
 
-        # C — Diffuse C_ice (implicit)
+        # ── C — Diffusion of C_ice (implicit Euler) ──────────────────────────
+        # Fick's law: ∂C_ice/∂t = D · ∂²C_ice/∂z²
+        # Implicit scheme: unconditionally stable (no diffusion CFL constraint).
+        # Solved as a tridiagonal linear system built once before the loop.
         Cice_new = diffuse_implicit(Cice_adv, A, dz, dt, bc_surf, bc_bed)
 
-        # D — Rebuild C_bulk
+        # ── D — Reconstruct C_bulk ───────────────────────────────────────────
+        # Only the lattice increment changes C_bulk (clathrathes don't diffuse).
+        # C_bulk_new = C_bulk_adv + (C_ice_new − C_ice_adv)
         C_bulk = rebuild_Cbulk(C_bulk_adv, Cice_new, Cice_adv)
 
-        # E — Re-equilibrate
+        # ── E — Re-equilibrate ───────────────────────────────────────────────
+        # Diffusion has changed C_ice → re-partition to get consistent x, C_ice.
         X_k, C_ice = partition(C_bulk, pS, n_air)
 
-        # F — Gas loss (clathrate only)
+        # ── F — Gas loss (clathrate phase only) ──────────────────────────────
+        # C_clath = C_bulk − C_ice decays exponentially near the bed.
+        # C_ice is not affected by gas loss (Henry's law re-establishes after).
         C_bulk = apply_gas_loss(C_bulk, C_ice, decay_factor)
         X_k, C_ice = partition(C_bulk, pS, n_air)
 

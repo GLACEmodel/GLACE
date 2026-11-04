@@ -26,9 +26,17 @@ import numpy as np
 def advect_upwind(C, u, dz, dt, bc_surf, bc_bed):
     """First-order upwind advection of a scalar field C.
 
-    Upwind direction chosen point-by-point from the sign of u:
-        u ≥ 0  →  backward difference  (∂C/∂z ≈ (C_i − C_{i-1}) / dz)
-        u < 0  →  forward difference   (∂C/∂z ≈ (C_{i+1} − C_i  ) / dz)
+    "Upwind" means we look UPSTREAM (against the flow) to estimate the gradient.
+
+    Ice compacts downward (u < 0 everywhere in the Eulerian frame fixed to the bed):
+        u < 0  →  flow is downward  →  upstream is ABOVE  →  forward difference
+                  ∂C/∂z ≈ (C_{i+1} − C_i) / dz
+
+    If ever u > 0 (e.g. a sensitivity test with upward flow):
+        u ≥ 0  →  upstream is BELOW  →  backward difference
+                  ∂C/∂z ≈ (C_i − C_{i-1}) / dz
+
+    The update is: C_adv = C − dt · u · ∂C/∂z
 
     Parameters
     ----------
@@ -46,10 +54,10 @@ def advect_upwind(C, u, dz, dt, bc_surf, bc_bed):
     nz = len(C)
     dCdz = np.zeros(nz)
 
-    # Interior nodes only — BCs handled separately
+    # Interior nodes — upwind direction from sign of u
     u_pos = u[1:-1] >= 0
-    dCdz[1:-1] = (u_pos  * (C[1:-1] - C[:-2])
-                + ~u_pos * (C[2:]   - C[1:-1])) / dz
+    dCdz[1:-1] = (u_pos  * (C[1:-1] - C[:-2])    # u ≥ 0: backward diff (upstream = below)
+                + ~u_pos * (C[2:]   - C[1:-1])) / dz  # u < 0: forward diff (upstream = above)
 
     C_adv = C - dt * u * dCdz
 
