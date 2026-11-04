@@ -16,6 +16,13 @@ matlab_workspace.mat
 *.eps
 *.svg
 
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
 # macOS
 .DS_Store
 .AppleDouble
