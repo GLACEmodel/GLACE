@@ -24,11 +24,22 @@ S_Ar    = 10e-9       # gas solubility in ice lattice       [mol m⁻³ Pa⁻¹]
 X_atm   = 0.934e-2    # atmospheric mixing ratio (Ar: 0.934 %; adapt for other gases)
 
 # ── Site-specific parameters ──────────────────────────────────────────────────
-TAC     = 0.091e-3    # total air content (Sailer et al.)   [m³_STP kg⁻¹ ice]
+TAC     = 4.856e-5    # total air content                   [m³_STP kg⁻¹ ice]
+#   Source : data/Table_S1_122025_for manuscript.xlsx, sheet CampCentury, col D
+#   (Gas Content [mL_STP / kg_ice]).
+#   TAC = mean of the 10 measurements at z > 20 m (top of domain, above the
+#   gas-loss zone): z = 20.70 → 26.55 m, values 36.7–56.0 mL/kg, mean = 48.56 mL/kg.
+#   Conversion: 48.56 mL/kg × 1e-6 = 4.856e-5 m³_STP/kg.
+#   These are the least gas-loss-affected samples and therefore best represent
+#   the undisturbed basal-ice air content at Camp Century.
+#   (Previous value: 0.091e-3 from Sailer et al., measured on the main ice column
+#    above the basal zone — ~2× higher than observed here in the basal ice.)
 
 # ── Transport ─────────────────────────────────────────────────────────────────
 D_m2s       = 1e-11   # gas diffusivity in ice lattice      [m² s⁻¹]
 flux_bottom = 6e-7    # basal Ar flux from bedrock          [mol m⁻² yr⁻¹]
+#   Calibrated to match observed Ar% enrichment near bed (~1.6% at z<1m);
+#   gas_loss = 0 (Ar is a noble gas, not lost like N2/O2).
 
 # ── Velocity — Lliboutry (1979), frozen bed ───────────────────────────────────
 # Eulerian frame fixed to bed; z positive upward.
@@ -51,6 +62,7 @@ p_llib = 3            # Lliboutry shape parameter           [-]
 #   clathrate dissociation. The exponential profile is fitted to this gradient.
 #   See glace/data.py :: load_campcentury() to reload the observations.
 gas_loss   = 0.0      # Ar is a noble gas — no gas loss     [yr⁻¹]
+# (N2/O2 are lost near the bed, but Ar is conserved; set >0 to re-enable)
 z_char     = 8.0      # e-folding height above bed          [m]
 z_gl_limit = 20.0     # upper limit of gas-loss zone        [m]
 
@@ -59,6 +71,6 @@ nz = 101              # number of vertical nodes
 Z  = 30.0             # domain height above bed             [m]
 
 # ── Time ──────────────────────────────────────────────────────────────────────
-T  = 1.25e5           # total simulation time               [yr]
+T  = 8e5              # total simulation time               [yr]
 dt = 3.0              # timestep                            [yr]
 # CFL check is performed in build_params(); target CFL < 1 for upwind stability.
