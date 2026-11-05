@@ -10,6 +10,7 @@ matlab_workspace.mat
 
 # Generated figures and outputs
 *.png
+!figures/*.png
 *.jpg
 *.jpeg
 *.pdf
