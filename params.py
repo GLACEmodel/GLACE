@@ -80,6 +80,7 @@ nz = 101              # number of vertical nodes
 Z  = 30.0             # domain height above bed             [m]
 
 # ── Time ──────────────────────────────────────────────────────────────────────
-T  = 8e5              # total simulation time               [yr]
+T  = 1e5              # total simulation time               [yr]  #normally 8e5 for CC but too large to see changes
+
 dt = 3.0              # timestep                            [yr]
 # CFL check is performed in build_params(); target CFL < 1 for upwind stability.
