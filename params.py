@@ -52,19 +52,25 @@ H_ice  = 1387.0       # ice thickness                       [m]
 p_llib = 3            # Lliboutry shape parameter           [-]
 
 # ── Gas loss ──────────────────────────────────────────────────────────────────
-# λ(z) = gas_loss · exp(−z / z_char)  for z < z_gl_limit, else 0
+# λ(z) = gas_loss_data · exp(−z / z_char)  for z < z_gl_limit, else 0  (mode data)
+# λ(z) = 0 everywhere                                                   (mode none)
 # Only the clathrate phase is affected (C_ice unchanged by gas loss).
 #
-# Calibration source : data/Table_S1_122025_for manuscript.xlsx
-#   Sheet CampCentury, col D = Gas Content [mL_STP / kg_ice].
-#   The total gas content drops sharply in the bottom ~2 m (from ~91 mL/kg
-#   at depth to 10–25 mL/kg near the bed), indicating gas loss dominated by
-#   clathrate dissociation. The exponential profile is fitted to this gradient.
+# ► Switch between modes by changing GAS_LOSS_MODE below:
+#     'none' — Ar is a noble gas, conserved (default for Ar runs)
+#     'data' — exponential decay calibrated from lab data (for N₂/O₂ or sensitivity tests)
+#
+GAS_LOSS_MODE = 'none'   # ← change to 'data' to activate lab-calibrated gas loss
+
+# Mode 'data' — calibration source: data/Table_S1_122025_for manuscript.xlsx
+#   Sheet CampCentury, col D (Gas Content [mL_STP/kg_ice]).
+#   The total gas content drops sharply in the bottom ~2 m (from ~50 mL/kg
+#   to <15 mL/kg near the bed), indicating gas loss near the bed.
+#   The exponential rate gas_loss_data is fitted to this gradient.
 #   See glace/data.py :: load_campcentury() to reload the observations.
-gas_loss   = 0.0      # Ar is a noble gas — no gas loss     [yr⁻¹]
-# (N2/O2 are lost near the bed, but Ar is conserved; set >0 to re-enable)
-z_char     = 8.0      # e-folding height above bed          [m]
-z_gl_limit = 20.0     # upper limit of gas-loss zone        [m]
+gas_loss_data = 1.8e-6   # calibrated gas-loss rate (mode 'data' only) [yr⁻¹]
+z_char        = 8.0      # e-folding height above bed                   [m]
+z_gl_limit    = 20.0     # upper limit of gas-loss zone                 [m]
 
 # ── Grid ──────────────────────────────────────────────────────────────────────
 nz = 101              # number of vertical nodes

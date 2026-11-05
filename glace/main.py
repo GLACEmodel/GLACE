@@ -67,8 +67,15 @@ def build_params(p=P):
     print(f"  CFL           = {CFL:.3f}  {'⚠ > 1 !' if CFL > 1 else '✓'}")
     print(f"  Diffusion no. = {diff_num:.4f}")
 
-    # Gas-loss profile
-    lambda_z = gas_loss_profile(z, p.gas_loss, p.z_char, p.z_gl_limit)
+    # Gas-loss profile — two modes selectable via params.GAS_LOSS_MODE
+    #   'none' : λ = 0 everywhere (Ar, noble gas, conservative)
+    #   'data' : exponential profile calibrated from lab data (N₂/O₂ or sensitivity)
+    if p.GAS_LOSS_MODE == 'none':
+        lambda_z = np.zeros(p.nz)
+        print(f"  Gas loss mode   = none  (λ = 0 everywhere)")
+    else:  # 'data'
+        lambda_z = gas_loss_profile(z, p.gas_loss_data, p.z_char, p.z_gl_limit)
+        print(f"  Gas loss mode   = data  (λ_max = {p.gas_loss_data:.2e} yr⁻¹, z_char = {p.z_char} m)")
 
     # Atmospheric mixing ratio — read from params (gas-specific, e.g. 0.934e-2 for Ar)
     X_atm = p.X_atm   # [mol/mol]
