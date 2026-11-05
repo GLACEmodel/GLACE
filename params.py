@@ -28,7 +28,7 @@ TAC     = 0.091e-3    # total air content (Sailer et al.)   [m³_STP kg⁻¹ ice
 
 # ── Transport ─────────────────────────────────────────────────────────────────
 D_m2s       = 1e-11   # gas diffusivity in ice lattice      [m² s⁻¹]
-flux_bottom = 1.8e-9  # basal gas flux from bedrock         [mol m⁻² yr⁻¹]
+flux_bottom = 6e-7    # basal Ar flux from bedrock          [mol m⁻² yr⁻¹]
 
 # ── Velocity — Lliboutry (1979), frozen bed ───────────────────────────────────
 # Eulerian frame fixed to bed; z positive upward.
@@ -50,7 +50,7 @@ p_llib = 3            # Lliboutry shape parameter           [-]
 #   at depth to 10–25 mL/kg near the bed), indicating gas loss dominated by
 #   clathrate dissociation. The exponential profile is fitted to this gradient.
 #   See glace/data.py :: load_campcentury() to reload the observations.
-gas_loss   = 1.8e-6   # maximum gas-loss rate               [yr⁻¹]
+gas_loss   = 0.0      # Ar is a noble gas — no gas loss     [yr⁻¹]
 z_char     = 8.0      # e-folding height above bed          [m]
 z_gl_limit = 20.0     # upper limit of gas-loss zone        [m]
 
@@ -59,6 +59,6 @@ nz = 101              # number of vertical nodes
 Z  = 30.0             # domain height above bed             [m]
 
 # ── Time ──────────────────────────────────────────────────────────────────────
-T  = 8e5              # total simulation time               [yr]
+T  = 1.25e5           # total simulation time               [yr]
 dt = 3.0              # timestep                            [yr]
 # CFL check is performed in build_params(); target CFL < 1 for upwind stability.
