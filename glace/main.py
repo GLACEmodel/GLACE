@@ -77,22 +77,15 @@ def build_params(p=P):
         lambda_z = gas_loss_profile(z, p.gas_loss_data, p.z_char, p.z_gl_limit)
         print(f"  Gas loss mode   = data  (λ_max = {p.gas_loss_data:.2e} yr⁻¹, z_char = {p.z_char} m)")
 
-    # Surface mixing ratio — BC_IC_MODE selects between atmospheric and data-driven value
-    #   'atm'  : use X_atm from params (atmospheric, 0.934 % for Ar)
-    #   'data' : use the topmost measured Ar fraction from the lab Excel file
-    if p.BC_IC_MODE == 'data':
-        from glace.data import load_campcentury
-        import os
-        _data_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                                  'data', 'Table_S1_122025_for manuscript.xlsx')
-        _obs = load_campcentury(_data_path)
-        import numpy as _np
-        _idx_top = _np.argmax(_obs['z'])
-        x_surf = float(_obs['f_Ar'][_idx_top])   # Ar fraction at topmost data point
-        print(f'  BC/IC mode      = data  (x_surf = {x_surf*100:.4f} % at z = {_obs["z"][_idx_top]:.2f} m)')
-    else:  # 'atm'
-        x_surf = p.X_atm
-        print(f'  BC/IC mode      = atm   (x_surf = X_atm = {x_surf*100:.4f} %)')
+    # Surface mixing ratio — topmost measured Ar fraction from lab Excel file
+    # (z = 26.55 m, col L of Table_S1_122025_for manuscript.xlsx)
+    from glace.data import load_campcentury
+    _data_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                              'data', 'Table_S1_122025_for manuscript.xlsx')
+    _obs = load_campcentury(_data_path)
+    _idx_top = np.argmax(_obs['z'])
+    x_surf = float(_obs['f_Ar'][_idx_top])
+    print(f'  Surface BC/IC   = {x_surf*100:.4f} % Ar  (topmost data point, z = {_obs["z"][_idx_top]:.2f} m)')
 
     # Boundary conditions
     bc_surf = {
