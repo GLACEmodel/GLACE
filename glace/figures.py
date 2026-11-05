@@ -191,3 +191,70 @@ def plot_attribution(results_dict, z, title="Process attribution"):
     ax.grid(True, alpha=0.2)
     plt.tight_layout()
     return fig
+
+
+def plot_data_vs_model(result, data_path=None, title="Model vs observations — Camp Century"):
+    """Compare modelled Ar mixing ratio and total gas content with lab data.
+
+    Parameters
+    ----------
+    result    : dict — output of run_simulation (return_full=True or False)
+    data_path : str, optional — path to Table_S1_122025_for manuscript.xlsx
+                (auto-detected from glace/ location if None)
+    title     : str
+
+    Returns
+    -------
+    fig : matplotlib Figure
+    """
+    import os
+    from .data import load_campcentury
+
+    if data_path is None:
+        data_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "data", "Table_S1_122025_for manuscript.xlsx",
+        )
+
+    obs = load_campcentury(data_path)
+
+    z      = result['z']
+    X      = _get_final(result, 'X')       # Ar mixing ratio [mol/mol]
+    C_bulk = _get_final(result, 'C_bulk')  # total Ar [mol/m³]
+
+    # Convert modelled C_bulk → gas content [mL_STP / kg_ice]
+    # C_bulk [mol/m³] × Vm_STP [m³/mol] / rho_ice [kg/m³] × 1e6 → mL/kg
+    Vm_STP  = 22.414e-3
+    rho_ice = 917.0
+    gc_model = C_bulk * Vm_STP / rho_ice * 1e6   # mL_STP / kg_ice
+
+    fig, axes = plt.subplots(1, 2, figsize=(11, 6), sharey=True)
+
+    # ── Panel 1 : Ar mixing ratio ─────────────────────────────────────────────
+    ax = axes[0]
+    ax.plot(X * 100, z,
+            lw=2.5, color='#144E9A', label='Model')
+    ax.scatter(obs['f_Ar'] * 100, obs['z'],
+               s=40, color='#D72637', zorder=5, label='Data')
+    ax.set_xlabel('Ar mixing ratio  x  (%)', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Height above bed (m)',     fontsize=12, fontweight='bold')
+    ax.set_title('Ar fraction',               fontsize=11)
+    ax.legend(fontsize=10)
+    ax.grid(True, alpha=0.25)
+    ax.tick_params(labelsize=10)
+
+    # ── Panel 2 : Total gas content ───────────────────────────────────────────
+    ax = axes[1]
+    ax.plot(gc_model, z,
+            lw=2.5, color='#1E8A3F', label='Model')
+    ax.scatter(obs['gas_content'], obs['z'],
+               s=40, color='#D72637', zorder=5, label='Data')
+    ax.set_xlabel('Total gas content  (mL_STP kg⁻¹)', fontsize=12, fontweight='bold')
+    ax.set_title('Total gas content',                   fontsize=11)
+    ax.legend(fontsize=10)
+    ax.grid(True, alpha=0.25)
+    ax.tick_params(labelsize=10)
+
+    fig.suptitle(title, fontsize=14, fontweight='bold')
+    plt.tight_layout()
+    return fig

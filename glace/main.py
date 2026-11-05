@@ -26,7 +26,8 @@ import params as P
 from glace.core    import run_simulation, partition
 from glace.physics import velocity_lliboutry, gas_loss_profile
 from glace.figures import (plot_profiles, plot_snapshots,
-                            plot_partition_fractions, plot_attribution)
+                            plot_partition_fractions, plot_attribution,
+                            plot_data_vs_model)
 
 
 # ── Parameter assembly ────────────────────────────────────────────────────────
@@ -197,6 +198,11 @@ if __name__ == '__main__':
     )
     fig4.savefig('figures/fig4_attribution.png', dpi=150, bbox_inches='tight')
     print("  figures/fig4_attribution.png")
+
+    fig5 = plot_data_vs_model(result,
+                             title=f"Model vs observations  (T = {P.T:.2g} yr)")
+    fig5.savefig('figures/fig5_data_vs_model.png', dpi=150, bbox_inches='tight')
+    print("  figures/fig5_data_vs_model.png")
 
     plt.close('all')
     print("\nAll done! ✓")
