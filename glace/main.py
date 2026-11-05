@@ -77,14 +77,28 @@ def build_params(p=P):
         lambda_z = gas_loss_profile(z, p.gas_loss_data, p.z_char, p.z_gl_limit)
         print(f"  Gas loss mode   = data  (λ_max = {p.gas_loss_data:.2e} yr⁻¹, z_char = {p.z_char} m)")
 
-    # Atmospheric mixing ratio — read from params (gas-specific, e.g. 0.934e-2 for Ar)
-    X_atm = p.X_atm   # [mol/mol]
+    # Surface mixing ratio — BC_IC_MODE selects between atmospheric and data-driven value
+    #   'atm'  : use X_atm from params (atmospheric, 0.934 % for Ar)
+    #   'data' : use the topmost measured Ar fraction from the lab Excel file
+    if p.BC_IC_MODE == 'data':
+        from glace.data import load_campcentury
+        import os
+        _data_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                                  'data', 'Table_S1_122025_for manuscript.xlsx')
+        _obs = load_campcentury(_data_path)
+        import numpy as _np
+        _idx_top = _np.argmax(_obs['z'])
+        x_surf = float(_obs['f_Ar'][_idx_top])   # Ar fraction at topmost data point
+        print(f'  BC/IC mode      = data  (x_surf = {x_surf*100:.4f} % at z = {_obs["z"][_idx_top]:.2f} m)')
+    else:  # 'atm'
+        x_surf = p.X_atm
+        print(f'  BC/IC mode      = atm   (x_surf = X_atm = {x_surf*100:.4f} %)')
 
     # Boundary conditions
     bc_surf = {
         'type' : 'dirichlet',
-        'C'    : X_atm * (pS[-1] + n_air),   # total gas at atmospheric ratio
-        'C_ice': X_atm * pS[-1],              # lattice gas via Henry's law
+        'C'    : x_surf * (pS[-1] + n_air),   # total Ar at surface mixing ratio
+        'C_ice': x_surf * pS[-1],              # lattice Ar via Henry's law
         'F'    : 0.0,
     }
     bc_bed = {
@@ -94,8 +108,8 @@ def build_params(p=P):
         'F'    : p.flux_bottom,                # [mol m⁻² yr⁻¹] — already in yr units
     }
 
-    # Initial condition — uniform field at atmospheric ratio
-    Cbulk0 = X_atm * (pS + n_air)
+    # Initial condition — uniform field at surface mixing ratio
+    Cbulk0 = x_surf * (pS + n_air)
 
     return dict(
         z=z, dz=dz, dt=p.dt, nt=nt,

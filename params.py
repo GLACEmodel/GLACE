@@ -21,7 +21,15 @@ Vm_STP  = 22.414e-3   # molar volume ideal gas at STP    [m³ mol⁻¹]
 # Change P_diss and S_Ar to switch to another gas (Ne, Kr, Xe, N2 …).
 P_diss  = 5e6         # clathrate dissociation pressure     [Pa]
 S_Ar    = 10e-9       # gas solubility in ice lattice       [mol m⁻³ Pa⁻¹]
+# Surface BC / IC mode — controls what mixing ratio is used at z = Z (top of domain)
+# and as initial condition throughout the column:
+#   'atm'  — use X_atm (atmospheric value, 0.934 % for Ar)
+#   'data' — use the topmost measured Ar fraction from the lab Excel file
+#             (z = 26.55 m, Ar = 0.9658 % from Table_S1_122025_for manuscript.xlsx)
+BC_IC_MODE = 'data'   # ← change to 'atm' to use the atmospheric value instead
+
 X_atm   = 0.934e-2    # atmospheric mixing ratio (Ar: 0.934 %; adapt for other gases)
+#   Used when BC_IC_MODE = 'atm', or as fallback if data file is unavailable.
 
 # ── Site-specific parameters ──────────────────────────────────────────────────
 TAC     = 4.856e-5    # total air content                   [m³_STP kg⁻¹ ice]
