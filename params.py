@@ -63,7 +63,7 @@ p_llib = 3            # Lliboutry shape parameter           [-]
 #     'none' — Ar is a noble gas, conserved (default for Ar runs)
 #     'data' — exponential decay calibrated from lab data (for N₂/O₂ or sensitivity tests)
 #
-GAS_LOSS_MODE = 'none'   # ← change to 'data' to activate lab-calibrated gas loss
+GAS_LOSS_MODE = 'data'   # ← change to 'data' to activate lab-calibrated gas loss
 
 # Mode 'data' — calibration source: data/Table_S1_122025_for manuscript.xlsx
 #   Sheet CampCentury, col D (Gas Content [mL_STP/kg_ice]).
