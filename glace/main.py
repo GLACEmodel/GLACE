@@ -22,7 +22,7 @@ import numpy as np
 # Allow running as a script from GLACE/ root
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import params as P
+from glace import params as P
 from glace.core    import run_simulation, partition
 from glace.physics import velocity_lliboutry, gas_loss_profile
 from glace.figures import (plot_profiles, plot_snapshots,
@@ -36,7 +36,7 @@ def build_params(p=P):
     """Assemble all model parameters into a dict for run_simulation.
 
     Override any value by passing a modified params module or a Namespace:
-        import params as p; p.D_m2s = 5e-12
+        from glace import params as p; p.D_m2s = 5e-12
         sim_params = build_params(p)
 
     Returns

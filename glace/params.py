@@ -53,6 +53,7 @@ flux_bottom = 6e-7    # basal Ar flux from bedrock          [mol m⁻² yr⁻¹]
 b_acc  = 0.35         # accumulation rate                   [m yr⁻¹ ice equiv]
 H_ice  = 1387.0       # ice thickness                       [m]
 p_llib = 3            # Lliboutry shape parameter           [-]
+h_kink = 400.0        # DJ kink height above bed             [m]  (Hammer et al. 1978)
 
 # ── Gas loss ──────────────────────────────────────────────────────────────────
 # λ(z) = gas_loss_data · exp(−z / z_char)  for z < z_gl_limit, else 0  (mode data)

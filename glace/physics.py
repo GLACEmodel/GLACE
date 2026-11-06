@@ -77,3 +77,35 @@ def gas_loss_profile(z, lambda_max, z_char, z_gl_limit):
     mask = z < z_gl_limit
     lam[mask] = lambda_max * np.exp(-z[mask] / z_char)
     return lam
+
+
+def velocity_dansgaard_johnsen(z, H_ice, b_acc, h_kink):
+    """Dansgaard-Johnsen (1969) vertical velocity adapted for Camp Century basal zone.
+
+    Below the kink height h_kink, the vertical velocity is approximately constant:
+        w_basal = -b_acc * h_kink / (2 * H_ice)
+
+    In our 30-m basal domain the velocity goes from 0 at the bed to w_basal at the top,
+    following a quadratic profile (physically reasonable in the basal shear layer):
+        u(z) = w_basal * (z / Z_domain)^2
+
+    Parameters
+    ----------
+    z      : (nz,) array -- height above bed [m]
+    H_ice  : float -- total ice thickness [m]
+    b_acc  : float -- accumulation rate [m/yr ice equiv], positive
+    h_kink : float -- kink height above bed [m]  (Camp Century ~400 m, Hammer et al. 1978)
+
+    Returns
+    -------
+    u : (nz,) array -- velocity [m/yr], negative = downward
+
+    Reference
+    ---------
+    Dansgaard & Johnsen (1969), J. Glaciol., 8, 215-223.
+    Hammer et al. (1978), J. Glaciol., 20, 3-26.
+    """
+    u_basal  = -b_acc * h_kink / (2.0 * H_ice)   # constant below kink [m/yr]
+    Z_domain = z[-1]                              # top of modelled domain
+    u = u_basal * (z / Z_domain) ** 2
+    return u
