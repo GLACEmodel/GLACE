@@ -222,11 +222,10 @@ def plot_data_vs_model(result, data_path=None, title="Model vs observations — 
     X      = _get_final(result, 'X')       # Ar mixing ratio [mol/mol]
     C_bulk = _get_final(result, 'C_bulk')  # total Ar [mol/m³]
 
-    # Convert modelled C_bulk → gas content [mL_STP / kg_ice]
-    # C_bulk [mol/m³] × Vm_STP [m³/mol] / rho_ice [kg/m³] × 1e6 → mL/kg
-    Vm_STP  = 22.414e-3
-    rho_ice = 917.0
-    gc_model = C_bulk * Vm_STP / rho_ice * 1e6   # mL_STP / kg_ice
+    # Convert modelled C_bulk → Ar concentration [mol / kg_ice]
+    # C_bulk [mol/m³] / rho_ice [kg/m³] → mol/kg_ice
+    rho_ice  = 917.0
+    C_Ar_model_molkg = C_bulk / rho_ice   # mol / kg_ice
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 6), sharey=True)
 
@@ -243,14 +242,14 @@ def plot_data_vs_model(result, data_path=None, title="Model vs observations — 
     ax.grid(True, alpha=0.25)
     ax.tick_params(labelsize=10)
 
-    # ── Panel 2 : Total gas content ───────────────────────────────────────────
+    # ── Panel 2 : Ar concentration C_bulk ────────────────────────────────────
     ax = axes[1]
-    ax.plot(gc_model, z,
+    ax.plot(C_Ar_model_molkg, z,
             lw=2.5, color='#1E8A3F', label='Model')
-    ax.scatter(obs['gas_content'], obs['z'],
+    ax.scatter(obs['C_Ar_molkg'], obs['z'],
                s=40, color='#D72637', zorder=5, label='Data')
-    ax.set_xlabel('Total gas content  (mL_STP kg⁻¹)', fontsize=12, fontweight='bold')
-    ax.set_title('Total gas content',                   fontsize=11)
+    ax.set_xlabel('Ar concentration  C_bulk  (mol kg⁻¹)', fontsize=12, fontweight='bold')
+    ax.set_title('Ar concentration  C_bulk',               fontsize=11)
     ax.legend(fontsize=10)
     ax.grid(True, alpha=0.25)
     ax.tick_params(labelsize=10)
